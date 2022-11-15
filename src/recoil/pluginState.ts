@@ -1,3 +1,4 @@
+import { FolderSortingOption } from 'modals';
 import { TFile, TFolder } from 'obsidian';
 import { atom } from 'recoil';
 import { FolderTree, FolderFileCountMap } from 'utils/types';
@@ -48,6 +49,12 @@ export const fileList = atom({
 export const pinnedFiles = atom({
     key: 'fileTreePinnedFilesState',
     default: [] as TFile[],
+    dangerouslyAllowMutability: true,
+});
+// folderSortingOptions
+export const folderSortingOptions = atom({
+    key: 'fileTreeFolderSortingOptionsState',
+    default: [] as FolderSortingOption[],
     dangerouslyAllowMutability: true,
 });
 

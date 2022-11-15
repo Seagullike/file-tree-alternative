@@ -138,3 +138,15 @@ function getAllFoldersInVault(app: App): TFolder[] {
     recursiveFx(rootFolder);
     return folders;
 }
+
+// folderSortingOptions
+// folderSortingOptionsString: parentFolder/currentFolder/FileName-Desc
+export class FolderSortingOption {
+    sortingType: string;
+    sortingDirection: string;
+
+    constructor(sortingType: string, sortingDirection: string) {
+        this.sortingType = sortingType;
+        this.sortingDirection = sortingDirection;
+    }
+}

@@ -10,6 +10,7 @@ import * as recoilState from 'recoil/pluginState';
 import { useRecoilState } from 'recoil';
 import useForceUpdate from 'hooks/ForceUpdate';
 import { CustomVaultChangeEvent, VaultChange } from 'utils/types';
+import { FolderSortingOption } from 'modals';
 
 interface MainTreeComponentProps {
     fileTreeView: FileTreeView;
@@ -36,6 +37,8 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
     const [_showSubFolders, setShowSubFolders] = useRecoilState(recoilState.showSubFolders);
     const [focusedFolder, setFocusedFolder] = useRecoilState(recoilState.focusedFolder);
     const [activeFile, setActiveFile] = useRecoilState(recoilState.activeFile);
+    // folderSortingOptions
+    const [folderSortingOptions, setfolderSortingOptions] = useRecoilState(recoilState.folderSortingOptions);
 
     const setNewFileList = (folderPath?: string) => {
         let filesPath = folderPath ? folderPath : activeFolderPath;
@@ -85,6 +88,7 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
         setExcludedFolders(getExcludedFolders());
         setExcludedExtensions(getExcludedExtensions());
         setPinnedFiles(getPinnedFilesFromSettings());
+        // folderSortingOptions
         setOpenFolders(getOpenFoldersFromSettings());
         setShowSubFolders(plugin.settings.showFilesFromSubFolders);
         setInitialActiveFolderPath();
@@ -113,6 +117,7 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
 
     // State Change Handlers
     useEffect(() => savePinnedFilesToSettings(), [pinnedFiles]);
+    // folderSortingOptions
     useEffect(() => saveOpenFoldersToSettings(), [openFolders]);
     useEffect(() => saveExcludedFoldersToSettings(), [excludedFolders]);
 
@@ -161,18 +166,51 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
         return openFolders;
     }
 
-    // Load The String List anad Set Pinned Files State
+    // Load The String List and Set Pinned Files State
     function getPinnedFilesFromSettings(): TFile[] {
         let pinnedFiles: TFile[] = [];
         let localStoragePinnedFiles = localStorage.getItem(plugin.keys.pinnedFilesKey);
         if (localStoragePinnedFiles) {
             localStoragePinnedFiles = JSON.parse(localStoragePinnedFiles);
+            // print log
+            console.log("--getPinnedFilesFromSettings():localStoragePinnedFiles = " + localStoragePinnedFiles)
             for (let file of localStoragePinnedFiles) {
                 let pinnedFile = plugin.app.vault.getAbstractFileByPath(file);
-                if (pinnedFile) pinnedFiles.push(pinnedFile as TFile);
+                if (pinnedFile) {
+                    let pinnedFileToPush = pinnedFile as TFile
+                    pinnedFiles.push(pinnedFile as TFile);
+                    // print log
+                    console.log("--getPinnedFilesFromSettings():pinnedFile.basename = " + pinnedFileToPush.basename)
+                    console.log("--getPinnedFilesFromSettings():pinnedFile.extension = " + pinnedFileToPush.extension)
+                    console.log("--getPinnedFilesFromSettings():pinnedFile.name = " + pinnedFileToPush.name)
+                    console.log("--getPinnedFilesFromSettings():pinnedFile.parent = " + pinnedFileToPush.parent)
+                    console.log("--getPinnedFilesFromSettings():pinnedFile.path = " + pinnedFileToPush.path)
+                    console.log("--getPinnedFilesFromSettings():pinnedFile.stat = " + pinnedFileToPush.stat)
+                    console.log("--getPinnedFilesFromSettings():pinnedFile.vault = " + pinnedFileToPush.vault)
+                }
             }
         }
         return pinnedFiles;
+    }
+    // folderSortingOptions
+    function getFolderSortingOptionsFromSettings(): FolderSortingOption[] {
+        let folderSortingOptions: FolderSortingOption[] = [];
+        let localStorageFolderSortingOptions = localStorage.getItem(plugin.keys.folderSortingOptionsKey);
+        if (localStorageFolderSortingOptions) {
+            localStorageFolderSortingOptions = JSON.parse(localStorageFolderSortingOptions);
+            // print log
+            console.log("--getFolderSortingOptionsFromSettings():localStorageFolderSortingOptions = " + localStorageFolderSortingOptions)
+            for (let option of localStorageFolderSortingOptions) {
+                let sortingOption = FileTreeUtils.GetFolderSortingOption(option);
+                if (sortingOption) {
+                    folderSortingOptions.push(sortingOption);
+                    // print log
+                    console.log("--getFolderSortingOptionsFromSettings():sortingOption.sortingType = " + sortingOption.sortingType)
+                    console.log("--getFolderSortingOptionsFromSettings():sortingOption.sortingDirection = " + sortingOption.sortingDirection)
+                }
+            }
+        }
+        return folderSortingOptions;
     }
 
     // Get The Folders State and Save in Data as String Array

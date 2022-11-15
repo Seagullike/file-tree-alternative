@@ -21,6 +21,7 @@ export default class FileTreeAlternativePlugin extends Plugin {
         openFoldersKey: 'fileTreePlugin-OpenFolders',
         customHeightKey: 'fileTreePlugin-CustomHeight',
         focusedFolder: 'fileTreePlugin-FocusedFolder',
+        folderSortingOptionsKey: 'fileTreePlugin-folderSortingOptions',
     };
 
     async onload() {

@@ -4,7 +4,7 @@ import { FolderFileCountMap, FolderTree } from 'utils/types';
 import { stripIndents } from 'common-tags';
 import dayjs from 'dayjs';
 import { eventTypes } from 'main';
-import { VaultChangeModal } from 'modals';
+import { FolderSortingOption, VaultChangeModal } from 'modals';
 
 // Helper Function To Get List of Files
 export const getFilesUnderPath = (path: string, plugin: FileTreeAlternativePlugin, getAllFiles?: boolean): TFile[] => {
@@ -136,15 +136,14 @@ export const getFileCreateString = (params: { plugin: FileTreeAlternativePlugin;
     const { plugin, fileName } = params;
 
     return stripIndents`
-    ${
-        plugin.settings.createdYaml
+    ${plugin.settings.createdYaml
             ? `
         ---
         created: ${dayjs(new Date()).format('YYYY-MM-DD hh:mm:ss')}
         ---
         `
             : ''
-    }
+        }
     ${plugin.settings.fileNameIsHeader ? `# ${fileName}` : ''}
     `;
 };
@@ -172,4 +171,18 @@ export const createNewFile = async (e: React.MouseEvent, folderPath: string, plu
     if (!targetFolder) return;
     let modal = new VaultChangeModal(plugin, targetFolder, 'create note');
     modal.open();
+};
+
+// folderSortingOptions
+export const GetFolderSortingOption = (folderSortingOptionsString: string) => {
+    if (folderSortingOptionsString) {
+        var sortingString = folderSortingOptionsString.substring(folderSortingOptionsString.lastIndexOf('/'), folderSortingOptionsString.length - 1);
+        if (sortingString) {
+            var sortingStrArr = sortingString.split('-');
+            var sortingType = sortingStrArr[0];
+            var sortingDirection = sortingStrArr[1];
+            return new FolderSortingOption(sortingType, sortingDirection);
+        }
+    }
+    return new FolderSortingOption("FileName", "ASC");
 };
