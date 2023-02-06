@@ -73,3 +73,33 @@ export const focusedFolder = atom({
     default: null as TFolder,
     dangerouslyAllowMutability: true,
 });
+
+export const sortFilesByNameAscFolders = atom({
+    key: 'fileTreeSortFilesByNameAscFolders',
+    default: [] as string[],
+});
+
+export const sortFilesByNameDescFolders = atom({
+    key: 'fileTreeSortFilesByNameDescFolders',
+    default: [] as string[],
+});
+
+export const sortFilesByCreatedTimeAscFolders = atom({
+    key: 'fileTreeSortFilesByCreatedTimeAscFolders',
+    default: [] as string[],
+});
+
+export const sortFilesByCreatedTimeDescFolders = atom({
+    key: 'fileTreeSortFilesByCreatedTimeDescFolders',
+    default: [] as string[],
+});
+
+export const sortFilesByUpdatedTimeAscFolders = atom({
+    key: 'fileTreeSortFilesByUpdatedTimeAscFolders',
+    default: [] as string[],
+});
+
+export const sortFilesByUpdatedTimeDescFolders = atom({
+    key: 'fileTreeSortFilesByUpdatedTimeDescFolders',
+    default: [] as string[],
+});

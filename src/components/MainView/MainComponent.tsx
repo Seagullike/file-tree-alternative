@@ -40,6 +40,14 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
     // folderSortingOptions
     const [folderSortingOptions, setfolderSortingOptions] = useRecoilState(recoilState.folderSortingOptions);
 
+    const [_sortFilesByNameAscFolders, setSortFilesByNameAscFolders] = useRecoilState(recoilState.sortFilesByNameAscFolders);
+    const [_sortFilesByNameDescFolders, setSortFilesByNameDescFolders] = useRecoilState(recoilState.sortFilesByNameDescFolders);
+    const [_sortFilesByCreatedTimeAscFolders, setSortFilesByCreatedTimeAscFolders] = useRecoilState(recoilState.sortFilesByCreatedTimeAscFolders);
+    const [_sortFilesByCreatedTimeDescFolders, setSortFilesByCreatedTimeDescFolders] = useRecoilState(recoilState.sortFilesByCreatedTimeDescFolders);
+    const [_sortFilesByUpdatedTimeAscFolders, setSortFilesByUpdatedTimeAscFolders] = useRecoilState(recoilState.sortFilesByUpdatedTimeAscFolders);
+    const [_sortFilesByUpdatedTimeDescFolders, setSortFilesByUpdatedTimeDescFolders] = useRecoilState(recoilState.sortFilesByUpdatedTimeDescFolders);
+
+
     const setNewFileList = (folderPath?: string) => {
         let filesPath = folderPath ? folderPath : activeFolderPath;
         setFileList(FileTreeUtils.getFilesUnderPath(filesPath, plugin));
@@ -90,6 +98,13 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
         setPinnedFiles(getPinnedFilesFromSettings());
         // folderSortingOptions
         setOpenFolders(getOpenFoldersFromSettings());
+        // file sorting
+        setSortFilesByNameAscFolders(getSortFilesByNameAscFolders());
+        setSortFilesByNameDescFolders(getSortFilesByNameDescFolders());
+        setSortFilesByCreatedTimeAscFolders(getSortFilesByCreatedTimeAscFolders());
+        setSortFilesByCreatedTimeDescFolders(getSortFilesByCreatedTimeDescFolders());
+        setSortFilesByUpdatedTimeAscFolders(getSortFilesByUpdatedTimeAscFolders());
+        setSortFilesByUpdatedTimeDescFolders(getSortFilesByUpdatedTimeDescFolders());
         setShowSubFolders(plugin.settings.showFilesFromSubFolders);
         setInitialActiveFolderPath();
         if (plugin.settings.folderCount) setFolderFileCountMap(FileTreeUtils.getFolderNoteCountMap(plugin));
@@ -138,6 +153,56 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
             excludedExtensions.push(extension.trim());
         }
         return excludedExtensions;
+    }
+
+    // files sorting
+    function getSortFilesByNameAscFolders(): string[] {
+        let sortingString: string = plugin.settings.sortFilesByNameAscFolders;
+        let sortFilesBy: string[] = [];
+        for (let sorting of sortingString.split(',')) {
+            sortFilesBy.push(sorting.trim());
+        }
+        return sortFilesBy;
+    }
+    function getSortFilesByNameDescFolders(): string[] {
+        let sortingString: string = plugin.settings.sortFilesByNameDescFolders;
+        let sortFilesBy: string[] = [];
+        for (let sorting of sortingString.split(',')) {
+            sortFilesBy.push(sorting.trim());
+        }
+        return sortFilesBy;
+    }
+    function getSortFilesByCreatedTimeAscFolders(): string[] {
+        let sortingString: string = plugin.settings.sortFilesByCreatedTimeAscFolders;
+        let sortFilesBy: string[] = [];
+        for (let sorting of sortingString.split(',')) {
+            sortFilesBy.push(sorting.trim());
+        }
+        return sortFilesBy;
+    }
+    function getSortFilesByCreatedTimeDescFolders(): string[] {
+        let sortingString: string = plugin.settings.sortFilesByCreatedTimeDescFolders;
+        let sortFilesBy: string[] = [];
+        for (let sorting of sortingString.split(',')) {
+            sortFilesBy.push(sorting.trim());
+        }
+        return sortFilesBy;
+    }
+    function getSortFilesByUpdatedTimeAscFolders(): string[] {
+        let sortingString: string = plugin.settings.sortFilesByUpdatedTimeAscFolders;
+        let sortFilesBy: string[] = [];
+        for (let sorting of sortingString.split(',')) {
+            sortFilesBy.push(sorting.trim());
+        }
+        return sortFilesBy;
+    }
+    function getSortFilesByUpdatedTimeDescFolders(): string[] {
+        let sortingString: string = plugin.settings.sortFilesByUpdatedTimeDescFolders;
+        let sortFilesBy: string[] = [];
+        for (let sorting of sortingString.split(',')) {
+            sortFilesBy.push(sorting.trim());
+        }
+        return sortFilesBy;
     }
 
     // Load Excluded Folders

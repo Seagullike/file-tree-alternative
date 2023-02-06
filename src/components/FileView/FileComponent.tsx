@@ -30,6 +30,13 @@ export function FileComponent(props: FilesProps) {
     const [excludedFolders] = useRecoilState(recoilState.excludedFolders);
     const [showSubFolders, setShowSubFolders] = useRecoilState(recoilState.showSubFolders);
     const [focusedFolder, _setFocusedFolder] = useRecoilState(recoilState.focusedFolder);
+    // sort files
+    const [sortFilesByNameAscFolders] = useRecoilState(recoilState.sortFilesByNameAscFolders);
+    const [sortFilesByNameDescFolders] = useRecoilState(recoilState.sortFilesByNameDescFolders);
+    const [sortFilesByCreatedTimeAscFolders] = useRecoilState(recoilState.sortFilesByCreatedTimeAscFolders);
+    const [sortFilesByCreatedTimeDescFolders] = useRecoilState(recoilState.sortFilesByCreatedTimeDescFolders);
+    const [sortFilesByUpdatedTimeAscFolders] = useRecoilState(recoilState.sortFilesByUpdatedTimeAscFolders);
+    const [sortFilesByUpdatedTimeDescFolders] = useRecoilState(recoilState.sortFilesByUpdatedTimeDescFolders);
 
     // Local States
     const [highlight, setHighlight] = useState<boolean>(false);
@@ -85,31 +92,114 @@ export function FileComponent(props: FilesProps) {
             sortedfileList = sortedfileList.filter((f) => f.basename !== f.parent.name);
         }
         // Sort File by Name or Last Content Update, moving pinned files to the front
+        let folderPath: string;
+        if (sortedfileList.length > 0) {
+            folderPath = sortedfileList[0].path.replace("/" + sortedfileList[0].name, "");
+        }
+        // console.log("sortFilesByNameAscFolders:" + sortFilesByNameAscFolders)
+        // console.log("sortFilesByNameDescFolders:" + sortFilesByNameDescFolders)
+        // console.log("sortFilesByCreatedTimeAscFolders:" + sortFilesByCreatedTimeAscFolders)
+        // console.log("sortFilesByCreatedTimeDescFolders:" + sortFilesByCreatedTimeDescFolders)
+        // console.log("sortFilesByUpdatedTimeAscFolders:" + sortFilesByUpdatedTimeAscFolders)
+        // console.log("sortFilesByUpdatedTimeDescFolders:" + sortFilesByUpdatedTimeDescFolders)
+
         sortedfileList = sortedfileList.sort((a, b) => {
-            if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
-                return -1;
-            } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
-                return 1;
-            } else if (plugin.settings.sortFilesBy === 'name') {
-                return plugin.settings.showFileNameAsFullPath
-                    ? a.path.localeCompare(b.path, 'en', { numeric: true })
-                    : a.name.localeCompare(b.name, 'en', { numeric: true });
-            } else if (plugin.settings.sortFilesBy === 'name-rev') {
-                return plugin.settings.showFileNameAsFullPath
-                    ? b.path.localeCompare(a.path, 'en', { numeric: true })
-                    : b.name.localeCompare(a.name, 'en', { numeric: true });
-            } else if (plugin.settings.sortFilesBy === 'last-update') {
-                return b.stat.mtime - a.stat.mtime;
-            } else if (plugin.settings.sortFilesBy === 'last-update-rev') {
-                return a.stat.mtime - b.stat.mtime;
-            } else if (plugin.settings.sortFilesBy === 'created') {
-                return b.stat.ctime - a.stat.ctime;
-            } else if (plugin.settings.sortFilesBy === 'created-rev') {
-                return a.stat.ctime - b.stat.ctime;
-            } else if (plugin.settings.sortFilesBy === 'file-size') {
-                return b.stat.size - a.stat.size;
-            } else if (plugin.settings.sortFilesBy === 'file-size-rev') {
-                return a.stat.size - b.stat.size;
+            // name asc
+            if (sortFilesByNameAscFolders.contains(folderPath)) {
+                console.log("sortFilesByNameAscFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return plugin.settings.showFileNameAsFullPath
+                        ? a.path.localeCompare(b.path, 'en', { numeric: true })
+                        : a.name.localeCompare(b.name, 'en', { numeric: true });
+                }
+            }
+            // name desc
+            else if (sortFilesByNameDescFolders.contains(folderPath)) {
+                console.log("sortFilesByNameDescFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return plugin.settings.showFileNameAsFullPath
+                        ? b.path.localeCompare(a.path, 'en', { numeric: true })
+                        : b.name.localeCompare(a.name, 'en', { numeric: true });
+                }
+            }
+            // created time asc
+            else if (sortFilesByCreatedTimeAscFolders.contains(folderPath)) {
+                console.log("sortFilesByCreatedTimeAscFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return b.stat.ctime - a.stat.ctime;
+                }
+            }
+            // created time desc
+            else if (sortFilesByCreatedTimeDescFolders.contains(folderPath)) {
+                console.log("sortFilesByCreatedTimeDescFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return b.stat.ctime - a.stat.ctime;
+                }
+            }
+            // updated time asc
+            else if (sortFilesByUpdatedTimeAscFolders.contains(folderPath)) {
+                console.log("sortFilesByUpdatedTimeAscFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return b.stat.mtime - a.stat.mtime;
+                }
+            }
+            // updated time desc
+            else if (sortFilesByUpdatedTimeDescFolders.contains(folderPath)) {
+                console.log("sortFilesByUpdatedTimeDescFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return a.stat.mtime - b.stat.mtime;
+                }
+            }
+            else {
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else if (plugin.settings.sortFilesBy === 'name') {
+                    return plugin.settings.showFileNameAsFullPath
+                        ? a.path.localeCompare(b.path, 'en', { numeric: true })
+                        : a.name.localeCompare(b.name, 'en', { numeric: true });
+                } else if (plugin.settings.sortFilesBy === 'name-rev') {
+                    return plugin.settings.showFileNameAsFullPath
+                        ? b.path.localeCompare(a.path, 'en', { numeric: true })
+                        : b.name.localeCompare(a.name, 'en', { numeric: true });
+                } else if (plugin.settings.sortFilesBy === 'last-update') {
+                    return b.stat.mtime - a.stat.mtime;
+                } else if (plugin.settings.sortFilesBy === 'last-update-rev') {
+                    return a.stat.mtime - b.stat.mtime;
+                } else if (plugin.settings.sortFilesBy === 'created') {
+                    return b.stat.ctime - a.stat.ctime;
+                } else if (plugin.settings.sortFilesBy === 'created-rev') {
+                    return a.stat.ctime - b.stat.ctime;
+                } else if (plugin.settings.sortFilesBy === 'file-size') {
+                    return b.stat.size - a.stat.size;
+                } else if (plugin.settings.sortFilesBy === 'file-size-rev') {
+                    return a.stat.size - b.stat.size;
+                }
             }
         });
         return sortedfileList;
@@ -407,13 +497,12 @@ export function FileComponent(props: FilesProps) {
 
                             {/* File List */}
                             <div
-                                className={`oz-file-tree-files${
-                                    plugin.settings.fixedHeaderInFileList
-                                        ? searchBoxVisible
-                                            ? ' file-tree-files-fixed-with-search'
-                                            : ' file-tree-files-fixed'
-                                        : ''
-                                }`}>
+                                className={`oz-file-tree-files${plugin.settings.fixedHeaderInFileList
+                                    ? searchBoxVisible
+                                        ? ' file-tree-files-fixed-with-search'
+                                        : ' file-tree-files-fixed'
+                                    : ''
+                                    }`}>
                                 {filesToList.map((file) => {
                                     return <NavFile file={file} plugin={plugin} key={file.path} />;
                                 })}
@@ -607,10 +696,10 @@ const NavFile = (props: { file: TFile; plugin: FileTreeAlternativePlugin }) => {
         return file.extension === 'pdf'
             ? Icons.AiFillFilePdf
             : ['png', 'jpg', 'jpeg', 'svg'].contains(file.extension)
-            ? Icons.AiFillFileImage
-            : ['doc', 'docx'].contains(file.extension)
-            ? Icons.AiFillFileWord
-            : Icons.BiFile;
+                ? Icons.AiFillFileImage
+                : ['doc', 'docx'].contains(file.extension)
+                    ? Icons.AiFillFileWord
+                    : Icons.BiFile;
     };
 
     const FileIcon = useMemo(() => getFileIcon(), [plugin.settings.iconBeforeFileName]);

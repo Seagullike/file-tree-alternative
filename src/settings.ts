@@ -33,6 +33,13 @@ export interface FileTreeAlternativePluginSettings {
     folderNote: boolean;
     deleteFileOption: DeleteFileOption;
     showFileNameAsFullPath: boolean;
+
+    sortFilesByNameAscFolders: string;
+    sortFilesByNameDescFolders: string;
+    sortFilesByCreatedTimeAscFolders: string;
+    sortFilesByCreatedTimeDescFolders: string;
+    sortFilesByUpdatedTimeAscFolders: string;
+    sortFilesByUpdatedTimeDescFolders: string;
 }
 
 export const DEFAULT_SETTINGS: FileTreeAlternativePluginSettings = {
@@ -60,6 +67,13 @@ export const DEFAULT_SETTINGS: FileTreeAlternativePluginSettings = {
     folderNote: false,
     deleteFileOption: 'trash',
     showFileNameAsFullPath: false,
+
+    sortFilesByNameAscFolders: '',
+    sortFilesByNameDescFolders: '',
+    sortFilesByCreatedTimeAscFolders: '',
+    sortFilesByCreatedTimeDescFolders: '',
+    sortFilesByUpdatedTimeAscFolders: '',
+    sortFilesByUpdatedTimeDescFolders: '',
 };
 
 export class FileTreeAlternativePluginSettingsTab extends PluginSettingTab {
@@ -404,7 +418,104 @@ export class FileTreeAlternativePluginSettingsTab extends PluginSettingTab {
                     });
             });
 
+        /* ------------- Folder Sorting Settings ------------- */
+
+        containerEl.createEl('h2', { text: 'Folder Sorting Settings' });
+
+        new Setting(containerEl)
+            .setName('Sort Files By Name Asc Folder Paths')
+            .setDesc(
+                `Provide full path of folders, which you want to sorted by name asc in file tree, divided by comma. i.e. 'Personal/Attachments, Work/Documents/Folders'.
+                All subfolders are going to be excluded, as well. You need to reload the vault or use "Reload File Tree" button below to make changes effective.`
+            )
+            .addTextArea((text) =>
+                text.setValue(this.plugin.settings.sortFilesByNameAscFolders).onChange((value) => {
+                    this.plugin.settings.sortFilesByNameAscFolders = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName('Sort Files By Name Desc Folder Paths')
+            .setDesc(
+                `Provide full path of folders, which you want to sorted by name desc in file tree, divided by comma. i.e. 'Personal/Attachments, Work/Documents/Folders'.
+                All subfolders are going to be excluded, as well. You need to reload the vault or use "Reload File Tree" button below to make changes effective.`
+            )
+            .addTextArea((text) =>
+                text.setValue(this.plugin.settings.sortFilesByNameDescFolders).onChange((value) => {
+                    this.plugin.settings.sortFilesByNameDescFolders = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName('Sort Files By Created Time Asc Folder Paths')
+            .setDesc(
+                `Provide full path of folders, which you want to sorted by created time asc in file tree, divided by comma. i.e. 'Personal/Attachments, Work/Documents/Folders'.
+                All subfolders are going to be excluded, as well. You need to reload the vault or use "Reload File Tree" button below to make changes effective.`
+            )
+            .addTextArea((text) =>
+                text.setValue(this.plugin.settings.sortFilesByCreatedTimeAscFolders).onChange((value) => {
+                    this.plugin.settings.sortFilesByCreatedTimeAscFolders = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName('Sort Files By Created Time Desc Folder Paths')
+            .setDesc(
+                `Provide full path of folders, which you want to sorted by created time desc in file tree, divided by comma. i.e. 'Personal/Attachments, Work/Documents/Folders'.
+                All subfolders are going to be excluded, as well. You need to reload the vault or use "Reload File Tree" button below to make changes effective.`
+            )
+            .addTextArea((text) =>
+                text.setValue(this.plugin.settings.sortFilesByCreatedTimeDescFolders).onChange((value) => {
+                    this.plugin.settings.sortFilesByCreatedTimeDescFolders = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName('Sort Files By Updated Time Asc Folder Paths')
+            .setDesc(
+                `Provide full path of folders, which you want to sorted by updated time asc in file tree, divided by comma. i.e. 'Personal/Attachments, Work/Documents/Folders'.
+                All subfolders are going to be excluded, as well. You need to reload the vault or use "Reload File Tree" button below to make changes effective.`
+            )
+            .addTextArea((text) =>
+                text.setValue(this.plugin.settings.sortFilesByUpdatedTimeAscFolders).onChange((value) => {
+                    this.plugin.settings.sortFilesByUpdatedTimeAscFolders = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName('Sort Files By Updated Time Desc Folder Paths')
+            .setDesc(
+                `Provide full path of folders, which you want to sorted by updated time desc in file tree, divided by comma. i.e. 'Personal/Attachments, Work/Documents/Folders'.
+                All subfolders are going to be excluded, as well. You need to reload the vault or use "Reload File Tree" button below to make changes effective.`
+            )
+            .addTextArea((text) =>
+                text.setValue(this.plugin.settings.sortFilesByUpdatedTimeDescFolders).onChange((value) => {
+                    this.plugin.settings.sortFilesByUpdatedTimeDescFolders = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setDesc(
+                'Use this button to reload the file tree. Reloading the file tree is required for some of the settings. You can also restart your vault to have same effect.'
+            )
+            .addButton((button) => {
+                button
+                    .setClass('reload-file-tree-button')
+                    .setTooltip('Click here to reload the file tree')
+                    .setButtonText('Reload File Tree')
+                    .onClick((e) => {
+                        this.plugin.refreshTreeLeafs();
+                    });
+            });
+
         /* ------------- Clear Data ------------- */
+
         containerEl.createEl('h2', { text: 'Clear Data' });
 
         new Setting(containerEl)
