@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Dropzone from 'react-dropzone';
 import { TFile, Menu } from 'obsidian';
 import * as Icons from 'utils/icons';
-import { VaultChangeModal, MoveSuggestionModal } from 'modals';
+import { VaultChangeModal, MoveSuggestionModal, ConfirmationModal } from 'modals';
 import FileTreeAlternativePlugin, { eventTypes } from 'main';
 import * as Util from 'utils/Utils';
 import * as recoilState from 'recoil/pluginState';
@@ -11,6 +11,7 @@ import { SortType } from 'settings';
 import { ObsidianVaultConfig } from 'utils/types';
 import useForceUpdate from 'hooks/ForceUpdate';
 import useLongPress, { isMouseEvent } from 'hooks/useLongPress';
+import { ICON } from 'FileTreeView';
 
 interface FilesProps {
     plugin: FileTreeAlternativePlugin;
@@ -99,10 +100,16 @@ export function FileComponent(props: FilesProps) {
                     : b.name.localeCompare(a.name, 'en', { numeric: true });
             } else if (plugin.settings.sortFilesBy === 'last-update') {
                 return b.stat.mtime - a.stat.mtime;
+            } else if (plugin.settings.sortFilesBy === 'last-update-rev') {
+                return a.stat.mtime - b.stat.mtime;
             } else if (plugin.settings.sortFilesBy === 'created') {
                 return b.stat.ctime - a.stat.ctime;
+            } else if (plugin.settings.sortFilesBy === 'created-rev') {
+                return a.stat.ctime - b.stat.ctime;
             } else if (plugin.settings.sortFilesBy === 'file-size') {
                 return b.stat.size - a.stat.size;
+            } else if (plugin.settings.sortFilesBy === 'file-size-rev') {
+                return a.stat.size - b.stat.size;
             }
         });
         return sortedfileList;
@@ -167,16 +174,38 @@ export function FileComponent(props: FilesProps) {
         return filteredFiles;
     };
 
+    const getFileTags = (mdFile: TFile): string[] => {
+        let fileCache = plugin.app.metadataCache.getFileCache(mdFile);
+        let fileTags: string[] = [];
+        if (fileCache.tags) {
+            for (let fileTag of fileCache.tags) {
+                fileTags.push(fileTag.tag);
+            }
+        }
+        if (fileCache.frontmatter && fileCache.frontmatter['tags']) {
+            let tagsFM = fileCache.frontmatter['tags'];
+            if (typeof tagsFM === 'string') {
+                let fileFMTags = tagsFM.split(',');
+                for (let i = 0; i < fileFMTags.length; i++) {
+                    fileTags.push(fileFMTags[i]);
+                }
+            } else if (Array.isArray(tagsFM)) {
+                for (let i = 0; i < tagsFM.length; i++) {
+                    fileTags.push(tagsFM[i]);
+                }
+            }
+        }
+        return fileTags;
+    };
+
     const getFilesWithTag = (searchTag: string): Set<TFile> => {
         let filesWithTag: Set<TFile> = new Set();
         let mdFiles = Util.getFilesUnderPath(plugin.settings.allSearchOnlyInFocusedFolder ? focusedFolder.path : '/', plugin, true);
         for (let mdFile of mdFiles) {
-            let fileCache = plugin.app.metadataCache.getFileCache(mdFile);
-            if (fileCache.tags) {
-                for (let fileTag of fileCache.tags) {
-                    if (fileTag.tag.toLowerCase().contains(searchTag.toLowerCase().trimStart())) {
-                        if (!filesWithTag.has(mdFile)) filesWithTag.add(mdFile);
-                    }
+            let fileTags = getFileTags(mdFile);
+            for (let fileTag of fileTags) {
+                if (fileTag.toLowerCase().contains(searchTag.toLowerCase().trimStart())) {
+                    if (!filesWithTag.has(mdFile)) filesWithTag.add(mdFile);
                 }
             }
         }
@@ -230,6 +259,13 @@ export function FileComponent(props: FilesProps) {
             });
         });
 
+        sortMenu.addItem((menuItem) => {
+            menuItem.setTitle('Created (Old to New)');
+            menuItem.onClick((ev: MouseEvent) => {
+                changeSortSettingTo('created-rev');
+            });
+        });
+
         sortMenu.addSeparator();
 
         sortMenu.addItem((menuItem) => {
@@ -239,12 +275,26 @@ export function FileComponent(props: FilesProps) {
             });
         });
 
+        sortMenu.addItem((menuItem) => {
+            menuItem.setTitle('File Size (Small to Big)');
+            menuItem.onClick((ev: MouseEvent) => {
+                changeSortSettingTo('file-size-rev');
+            });
+        });
+
         sortMenu.addSeparator();
 
         sortMenu.addItem((menuItem) => {
             menuItem.setTitle('Last Update (New to Old)');
             menuItem.onClick((ev: MouseEvent) => {
                 changeSortSettingTo('last-update');
+            });
+        });
+
+        sortMenu.addItem((menuItem) => {
+            menuItem.setTitle('Last Update (Old to New)');
+            menuItem.onClick((ev: MouseEvent) => {
+                changeSortSettingTo('last-update-rev');
             });
         });
 
@@ -274,7 +324,7 @@ export function FileComponent(props: FilesProps) {
                             <div className={`oz-file-tree-header-wrapper${plugin.settings.fixedHeaderInFileList ? ' file-tree-header-fixed' : ''}`}>
                                 <div className="oz-flex-container">
                                     <div className="oz-nav-action-button" style={{ marginLeft: '0px' }}>
-                                        {plugin.settings.evernoteView ? (
+                                        {['Horizontal', 'Vertical'].includes(plugin.settings.evernoteView) ? (
                                             <Icons.IoIosCloseCircleOutline
                                                 onClick={(e) => handleGoBack(e)}
                                                 size={topIconSize}
@@ -385,9 +435,20 @@ const NavFile = (props: { file: TFile; plugin: FileTreeAlternativePlugin }) => {
     const [pinnedFiles, setPinnedFiles] = useRecoilState(recoilState.pinnedFiles);
     const [activeFile, setActiveFile] = useRecoilState(recoilState.activeFile);
 
+    const [hoverActive, setHoverActive] = useState<boolean>(false);
+
     const longPressEvents = useLongPress((e: React.TouchEvent) => {
         triggerContextMenu(file, e);
     }, 500);
+
+    useEffect(() => {
+        if (hoverActive && plugin.settings.filePreviewOnHover) {
+            document.addEventListener('keydown', handleKeyDownEvent);
+            return () => {
+                document.removeEventListener('keydown', handleKeyDownEvent);
+            };
+        }
+    }, [hoverActive]);
 
     // Handle Click Event on File - Allows Open with Cmd/Ctrl
     const openFile = (file: TFile, e: React.MouseEvent) => {
@@ -434,14 +495,21 @@ const NavFile = (props: { file: TFile; plugin: FileTreeAlternativePlugin }) => {
             menuItem.setTitle('Delete');
             menuItem.setIcon('trash');
             menuItem.onClick((ev: MouseEvent) => {
-                let deleteOption = plugin.settings.deleteFileOption;
-                if (deleteOption === 'permanent') {
-                    plugin.app.vault.delete(file, true);
-                } else if (deleteOption === 'system-trash') {
-                    plugin.app.vault.trash(file, true);
-                } else if (deleteOption === 'trash') {
-                    plugin.app.vault.trash(file, false);
-                }
+                let confirmationModal = new ConfirmationModal(
+                    plugin,
+                    `Are you sure you want to delete the file "${file.basename}${file.extension === 'md' ? '' : file.extension}"?`,
+                    function () {
+                        let deleteOption = plugin.settings.deleteFileOption;
+                        if (deleteOption === 'permanent') {
+                            plugin.app.vault.delete(file, true);
+                        } else if (deleteOption === 'system-trash') {
+                            plugin.app.vault.trash(file, true);
+                        } else if (deleteOption === 'trash') {
+                            plugin.app.vault.trash(file, false);
+                        }
+                    }
+                );
+                confirmationModal.open();
             });
         });
 
@@ -495,22 +563,39 @@ const NavFile = (props: { file: TFile; plugin: FileTreeAlternativePlugin }) => {
         return false;
     };
 
+    const handleKeyDownEvent = (e: KeyboardEvent) => {
+        if (e.key === 'Control' || e.key === 'Meta') {
+            let el = document.querySelector(`.oz-nav-file-title[data-path="${file.path}"]`);
+            if (el) plugin.app.workspace.trigger('link-hover', {}, el, file.path, file.path);
+        }
+    };
+
     const mouseEnteredOnFile = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, file: TFile) => {
+        setHoverActive(true);
         if (plugin.settings.filePreviewOnHover && (e.ctrlKey || e.metaKey)) {
             plugin.app.workspace.trigger('link-hover', {}, e.target, file.path, file.path);
         }
     };
 
+    const mouseLeftFile = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, file: TFile) => {
+        setHoverActive(false);
+    };
+
     // --> Dragging for File
     const dragStarted = (e: React.DragEvent<HTMLDivElement>, file: TFile) => {
-        // @ts-ignore
-        const obsidianConfig = plugin.app.vault.config as ObsidianVaultConfig;
-        const linkText = ['absolute', 'relative'].contains(obsidianConfig.newLinkFormat) ? file.parent.path + '/' + file.basename : file.basename;
-        const link = obsidianConfig.useMarkdownLinks ? `[${file.basename}](${encodeURI(linkText + '.' + file.extension)})` : `[[${linkText}]]`;
-        // text to drag file to editor
-        e.dataTransfer.setData('text/plain', link);
         // json to move file to folder
         e.dataTransfer.setData('application/json', JSON.stringify({ filePath: file.path }));
+
+        // Obsidian Internal Dragmanager
+        (plugin.app as any).dragManager.onDragStart(e, {
+            icon: ICON,
+            source: undefined,
+            title: file.name,
+            type: 'file',
+            file: file,
+        });
+
+        (plugin.app as any).dragManager.dragFile(e, file, true);
     };
 
     // --> AuxClick (Mouse Wheel Button Action)
@@ -545,6 +630,7 @@ const NavFile = (props: { file: TFile; plugin: FileTreeAlternativePlugin }) => {
             onAuxClick={onAuxClick}
             onContextMenu={(e) => triggerContextMenu(file, e)}
             onMouseEnter={(e) => mouseEnteredOnFile(e, file)}
+            onMouseLeave={(e) => mouseLeftFile(e, file)}
             {...longPressEvents}>
             <div className="oz-nav-file-title" data-path={file.path}>
                 <div className="oz-nav-file-title-content">

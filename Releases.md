@@ -1,5 +1,28 @@
 # Release Updates
 
+## Version 2.2.9
+
+-   Vertical and Horizontal Evernote Views
+
+## Version 2.2.8
+
+-   #111 YAML Tags to be included in the tag search results
+
+## Version 2.2.7
+
+-   #123 Additional File Sorting Options
+-   #122 Obsidian Internal Drag Manager usage
+
+## Version 2.2.6
+
+-   #77 Delete Confirmation Modal
+-   Folder Count sort only if counts are enabled
+-   Ctrl/Cmd key press capture during hover on file name
+
+## Version 2.2.5
+
+-   #124 Folders Expand fix in case Counts are not enabled
+
 ## Version 2.2.4
 
 -   Open a file in a new tab or open to right options
