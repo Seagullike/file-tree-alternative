@@ -10,7 +10,7 @@ specifiers:
   cross-env: ^7
   dayjs: ^1.10.7
   obsidian: ^0.12.0
-  obsidian-plugin-cli: ^0.8.0
+  obsidian-plugin-cli: ^0.8.1
   preact: ^10
   prop-types: ^15.7.2
   react: npm:@preact/compat@17.0.2
