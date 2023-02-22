@@ -106,7 +106,7 @@ export function FileComponent(props: FilesProps) {
         sortedfileList = sortedfileList.sort((a, b) => {
             // name asc
             if (sortFilesByNameAscFolders.contains(folderPath)) {
-                console.log("sortFilesByNameAscFolders.contains(folderPath)")
+                // console.log("sortFilesByNameAscFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -119,7 +119,7 @@ export function FileComponent(props: FilesProps) {
             }
             // name desc
             else if (sortFilesByNameDescFolders.contains(folderPath)) {
-                console.log("sortFilesByNameDescFolders.contains(folderPath)")
+                // console.log("sortFilesByNameDescFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -132,7 +132,7 @@ export function FileComponent(props: FilesProps) {
             }
             // created time asc
             else if (sortFilesByCreatedTimeAscFolders.contains(folderPath)) {
-                console.log("sortFilesByCreatedTimeAscFolders.contains(folderPath)")
+                // console.log("sortFilesByCreatedTimeAscFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -143,7 +143,7 @@ export function FileComponent(props: FilesProps) {
             }
             // created time desc
             else if (sortFilesByCreatedTimeDescFolders.contains(folderPath)) {
-                console.log("sortFilesByCreatedTimeDescFolders.contains(folderPath)")
+                // console.log("sortFilesByCreatedTimeDescFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -154,7 +154,7 @@ export function FileComponent(props: FilesProps) {
             }
             // updated time asc
             else if (sortFilesByUpdatedTimeAscFolders.contains(folderPath)) {
-                console.log("sortFilesByUpdatedTimeAscFolders.contains(folderPath)")
+                // console.log("sortFilesByUpdatedTimeAscFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -165,7 +165,7 @@ export function FileComponent(props: FilesProps) {
             }
             // updated time desc
             else if (sortFilesByUpdatedTimeDescFolders.contains(folderPath)) {
-                console.log("sortFilesByUpdatedTimeDescFolders.contains(folderPath)")
+                // console.log("sortFilesByUpdatedTimeDescFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
