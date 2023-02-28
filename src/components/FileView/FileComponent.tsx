@@ -8,7 +8,6 @@ import * as Util from 'utils/Utils';
 import * as recoilState from 'recoil/pluginState';
 import { useRecoilState } from 'recoil';
 import { SortType } from 'settings';
-import { ObsidianVaultConfig } from 'utils/types';
 import useForceUpdate from 'hooks/ForceUpdate';
 import useLongPress, { isMouseEvent } from 'hooks/useLongPress';
 import { ICON } from 'FileTreeView';
@@ -104,102 +103,30 @@ export function FileComponent(props: FilesProps) {
         // console.log("sortFilesByUpdatedTimeDescFolders:" + sortFilesByUpdatedTimeDescFolders)
 
         sortedfileList = sortedfileList.sort((a, b) => {
-            // name asc
-            if (sortFilesByNameAscFolders.contains(folderPath)) {
-                // console.log("sortFilesByNameAscFolders.contains(folderPath)")
-                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
-                    return -1;
-                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
-                    return 1;
-                } else {
-                    return plugin.settings.showFileNameAsFullPath
-                        ? a.path.localeCompare(b.path, 'en', { numeric: true })
-                        : a.name.localeCompare(b.name, 'en', { numeric: true });
-                }
-            }
-            // name desc
-            else if (sortFilesByNameDescFolders.contains(folderPath)) {
-                // console.log("sortFilesByNameDescFolders.contains(folderPath)")
-                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
-                    return -1;
-                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
-                    return 1;
-                } else {
-                    return plugin.settings.showFileNameAsFullPath
-                        ? b.path.localeCompare(a.path, 'en', { numeric: true })
-                        : b.name.localeCompare(a.name, 'en', { numeric: true });
-                }
-            }
-            // created time asc
-            else if (sortFilesByCreatedTimeAscFolders.contains(folderPath)) {
-                // console.log("sortFilesByCreatedTimeAscFolders.contains(folderPath)")
-                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
-                    return -1;
-                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
-                    return 1;
-                } else {
-                    return b.stat.ctime - a.stat.ctime;
-                }
-            }
-            // created time desc
-            else if (sortFilesByCreatedTimeDescFolders.contains(folderPath)) {
-                // console.log("sortFilesByCreatedTimeDescFolders.contains(folderPath)")
-                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
-                    return -1;
-                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
-                    return 1;
-                } else {
-                    return b.stat.ctime - a.stat.ctime;
-                }
-            }
-            // updated time asc
-            else if (sortFilesByUpdatedTimeAscFolders.contains(folderPath)) {
-                // console.log("sortFilesByUpdatedTimeAscFolders.contains(folderPath)")
-                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
-                    return -1;
-                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
-                    return 1;
-                } else {
-                    return b.stat.mtime - a.stat.mtime;
-                }
-            }
-            // updated time desc
-            else if (sortFilesByUpdatedTimeDescFolders.contains(folderPath)) {
-                // console.log("sortFilesByUpdatedTimeDescFolders.contains(folderPath)")
-                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
-                    return -1;
-                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
-                    return 1;
-                } else {
-                    return a.stat.mtime - b.stat.mtime;
-                }
-            }
-            else {
-                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
-                    return -1;
-                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
-                    return 1;
-                } else if (plugin.settings.sortFilesBy === 'name') {
-                    return plugin.settings.showFileNameAsFullPath
-                        ? a.path.localeCompare(b.path, 'en', { numeric: true })
-                        : a.name.localeCompare(b.name, 'en', { numeric: true });
-                } else if (plugin.settings.sortFilesBy === 'name-rev') {
-                    return plugin.settings.showFileNameAsFullPath
-                        ? b.path.localeCompare(a.path, 'en', { numeric: true })
-                        : b.name.localeCompare(a.name, 'en', { numeric: true });
-                } else if (plugin.settings.sortFilesBy === 'last-update') {
-                    return b.stat.mtime - a.stat.mtime;
-                } else if (plugin.settings.sortFilesBy === 'last-update-rev') {
-                    return a.stat.mtime - b.stat.mtime;
-                } else if (plugin.settings.sortFilesBy === 'created') {
-                    return b.stat.ctime - a.stat.ctime;
-                } else if (plugin.settings.sortFilesBy === 'created-rev') {
-                    return a.stat.ctime - b.stat.ctime;
-                } else if (plugin.settings.sortFilesBy === 'file-size') {
-                    return b.stat.size - a.stat.size;
-                } else if (plugin.settings.sortFilesBy === 'file-size-rev') {
-                    return a.stat.size - b.stat.size;
-                }
+            if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                return -1;
+            } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                return 1;
+            } else if (plugin.settings.sortFilesBy === 'name') {
+                return plugin.settings.showFileNameAsFullPath
+                    ? a.path.localeCompare(b.path, 'en', { numeric: true })
+                    : a.name.localeCompare(b.name, 'en', { numeric: true });
+            } else if (plugin.settings.sortFilesBy === 'name-rev') {
+                return plugin.settings.showFileNameAsFullPath
+                    ? b.path.localeCompare(a.path, 'en', { numeric: true })
+                    : b.name.localeCompare(a.name, 'en', { numeric: true });
+            } else if (plugin.settings.sortFilesBy === 'last-update') {
+                return b.stat.mtime - a.stat.mtime;
+            } else if (plugin.settings.sortFilesBy === 'last-update-rev') {
+                return a.stat.mtime - b.stat.mtime;
+            } else if (plugin.settings.sortFilesBy === 'created') {
+                return b.stat.ctime - a.stat.ctime;
+            } else if (plugin.settings.sortFilesBy === 'created-rev') {
+                return a.stat.ctime - b.stat.ctime;
+            } else if (plugin.settings.sortFilesBy === 'file-size') {
+                return b.stat.size - a.stat.size;
+            } else if (plugin.settings.sortFilesBy === 'file-size-rev') {
+                return a.stat.size - b.stat.size;
             }
         });
         return sortedfileList;
@@ -207,7 +134,7 @@ export function FileComponent(props: FilesProps) {
 
     const filesToList: TFile[] = useMemo(
         () => customFiles(fileList),
-        [excludedFolders, excludedExtensions, pinnedFiles, fileList, plugin.settings.sortFilesBy]
+        [excludedFolders, excludedExtensions, pinnedFiles, fileList, plugin.settings.sortFilesBy, plugin.settings.sortReverse]
     );
 
     // Go Back Button - Sets Main Component View to Folder
@@ -326,72 +253,34 @@ export function FileComponent(props: FilesProps) {
             forceUpdate();
         };
 
-        sortMenu.addItem((menuItem) => {
-            menuItem.setTitle('File Name (A to Z)');
-            menuItem.onClick((ev: MouseEvent) => {
-                changeSortSettingTo('name');
+        const addMenuItem = (label: string, low: string, high: string, value: SortType) => {
+            sortMenu.addItem((menuItem) => {
+                const order = plugin.settings.sortReverse ? `${high} to ${low}` : `${low} to ${high}`;
+                menuItem.setTitle(`${label} (${order})`);
+                menuItem.setIcon(value === plugin.settings.sortFilesBy ? 'checkmark' : 'spaceIcon');
+                menuItem.onClick(() => changeSortSettingTo(value));
             });
-        });
+        };
 
-        sortMenu.addItem((menuItem) => {
-            menuItem.setTitle('File Name (Z to A)');
-            menuItem.onClick((ev: MouseEvent) => {
-                changeSortSettingTo('name-rev');
-            });
-        });
+        addMenuItem('File Name', 'A', 'Z', 'name');
+        addMenuItem('Created', 'New', 'Old', 'created');
+        addMenuItem('File Size', 'Big', 'Small', 'file-size');
+        addMenuItem('Last Update', 'New', 'Old', 'last-update');
 
         sortMenu.addSeparator();
 
         sortMenu.addItem((menuItem) => {
-            menuItem.setTitle('Created (New to Old)');
-            menuItem.onClick((ev: MouseEvent) => {
-                changeSortSettingTo('created');
-            });
-        });
-
-        sortMenu.addItem((menuItem) => {
-            menuItem.setTitle('Created (Old to New)');
-            menuItem.onClick((ev: MouseEvent) => {
-                changeSortSettingTo('created-rev');
-            });
-        });
-
-        sortMenu.addSeparator();
-
-        sortMenu.addItem((menuItem) => {
-            menuItem.setTitle('File Size (Big to Small)');
-            menuItem.onClick((ev: MouseEvent) => {
-                changeSortSettingTo('file-size');
-            });
-        });
-
-        sortMenu.addItem((menuItem) => {
-            menuItem.setTitle('File Size (Small to Big)');
-            menuItem.onClick((ev: MouseEvent) => {
-                changeSortSettingTo('file-size-rev');
-            });
-        });
-
-        sortMenu.addSeparator();
-
-        sortMenu.addItem((menuItem) => {
-            menuItem.setTitle('Last Update (New to Old)');
-            menuItem.onClick((ev: MouseEvent) => {
-                changeSortSettingTo('last-update');
-            });
-        });
-
-        sortMenu.addItem((menuItem) => {
-            menuItem.setTitle('Last Update (Old to New)');
-            menuItem.onClick((ev: MouseEvent) => {
-                changeSortSettingTo('last-update-rev');
+            menuItem.setTitle('Reverse Order');
+            menuItem.setIcon(plugin.settings.sortReverse ? 'checkmark' : 'spaceIcon');
+            menuItem.onClick(() => {
+                plugin.settings.sortReverse = !plugin.settings.sortReverse;
+                plugin.saveSettings();
+                forceUpdate();
             });
         });
 
         // Trigger
-        plugin.app.workspace.trigger('sort-menu', sortMenu);
         sortMenu.showAtPosition({ x: e.pageX, y: e.pageY });
-        return false;
     };
 
     const topIconSize = 19;

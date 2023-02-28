@@ -1,5 +1,13 @@
 # Release Updates
 
+## Version 2.3.1
+
+-   Default Evernote View Change
+
+## Version 2.3.0
+
+-   File sorting options enhancement
+
 ## Version 2.2.9
 
 -   Vertical and Horizontal Evernote Views
