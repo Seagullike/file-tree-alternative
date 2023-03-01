@@ -1,5 +1,13 @@
 # Release Updates
 
+## Version 2.3.3
+
+-   Reveal Leaf during initial vault load fix
+
+## Version 2.3.2
+
+-   Style settings plugin implementation
+
 ## Version 2.3.1
 
 -   Default Evernote View Change
