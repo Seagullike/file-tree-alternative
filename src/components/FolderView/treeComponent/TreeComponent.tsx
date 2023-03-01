@@ -44,6 +44,18 @@ export default function Tree(props: TreeProps) {
     const [sortFilesByUpdatedTimeDescFolders] = useRecoilState(recoilState.sortFilesByUpdatedTimeDescFolders);
 
     const [fileList, setFileList] = useRecoilState(recoilState.fileList);
+    const [activeFile, setActiveFile] = useRecoilState(recoilState.activeFile);
+
+    // Handle Click Event on File - Allows Open with Cmd/Ctrl
+    const openFile = (file: TFile, e: React.MouseEvent) => {
+        Util.openFile({
+            file: file,
+            app: plugin.app,
+            newLeaf: (e.ctrlKey || e.metaKey) && !(e.shiftKey || e.altKey),
+            leafBySplit: (e.ctrlKey || e.metaKey) && (e.shiftKey || e.altKey),
+        });
+        setActiveFile(file);
+    };
 
     // File List Update once showSubFolders change
     useEffect(() => {
@@ -89,20 +101,20 @@ export default function Tree(props: TreeProps) {
 
     // --> Click Events
     const folderNameClickEvent = (ev: React.MouseEvent) => {
-        const folderPath = `${props.folder.path}`;
-        // console.log("folderPath:" + folderPath);
-        // console.log("fileList.length:" + fileList.length);
-        const folderFileList = Util.getFilesUnderPath(folderPath, plugin, true);
-        const firstFileFullPath = customFiles(folderFileList);
-
-        // console.log("firstFileFullPath:" + firstFileFullPath);
         if (props.plugin.settings.folderNote && ev.shiftKey) {
             const fileFullPath = `${props.folder.path}/${props.folder.name}.md`;
             const folderNoteFile = props.plugin.app.vault.getAbstractFileByPath(fileFullPath);
 
             props.plugin.app.workspace.openLinkText(fileFullPath, '/', false);
         } else {
-            props.plugin.app.workspace.openLinkText(firstFileFullPath, '/', false);
+            const folderPath = `${props.folder.path}`;
+            // console.log("folderPath:" + folderPath);
+            // console.log("fileList.length:" + fileList.length);
+            const folderFileList = Util.getFilesUnderPath(folderPath, plugin, true);
+            const firstFile = customFiles(folderFileList);
+
+            // console.log("firstFile:" + firstFile.name);
+            openFile(firstFile, ev);
             props.onClick();
         }
     };
@@ -284,7 +296,7 @@ export default function Tree(props: TreeProps) {
 
         // console.log("fileList.length:" + fileList.length);
         // console.log("sortedfileList.length:" + sortedfileList.length);
-        return sortedfileList.length > 0 ? sortedfileList[0].path : "";
+        return sortedfileList.length > 0 ? sortedfileList[0] : new TFile();
     };
 
     return (
