@@ -90,12 +90,12 @@ export default function Tree(props: TreeProps) {
     // --> Click Events
     const folderNameClickEvent = (ev: React.MouseEvent) => {
         const folderPath = `${props.folder.path}`;
-        console.log("folderPath:" + folderPath);
-        console.log("fileList.length:" + fileList.length);
+        // console.log("folderPath:" + folderPath);
+        // console.log("fileList.length:" + fileList.length);
         const folderFileList = Util.getFilesUnderPath(folderPath, plugin, true);
         const firstFileFullPath = customFiles(folderFileList);
 
-        console.log("firstFileFullPath:" + firstFileFullPath);
+        // console.log("firstFileFullPath:" + firstFileFullPath);
         if (props.plugin.settings.folderNote && ev.shiftKey) {
             const fileFullPath = `${props.folder.path}/${props.folder.name}.md`;
             const folderNoteFile = props.plugin.app.vault.getAbstractFileByPath(fileFullPath);
@@ -155,7 +155,7 @@ export default function Tree(props: TreeProps) {
 
     // Sort - Filter Files Depending on Preferences
     const customFiles = (fileList: TFile[]) => {
-        console.log("TreeComponent:customFiles")
+        // console.log("TreeComponent:customFiles")
         let sortedfileList: TFile[];
         // Remove Files with Excluded Extensions
         if (excludedExtensions.length > 0) {
@@ -185,7 +185,7 @@ export default function Tree(props: TreeProps) {
         sortedfileList = sortedfileList.sort((a, b) => {
             // name asc
             if (sortFilesByNameAscFolders.contains(folderPath)) {
-                console.log("sortFilesByNameAscFolders.contains(folderPath)")
+                // console.log("sortFilesByNameAscFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -198,7 +198,7 @@ export default function Tree(props: TreeProps) {
             }
             // name desc
             else if (sortFilesByNameDescFolders.contains(folderPath)) {
-                console.log("sortFilesByNameDescFolders.contains(folderPath)")
+                // console.log("sortFilesByNameDescFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -211,7 +211,7 @@ export default function Tree(props: TreeProps) {
             }
             // created time asc
             else if (sortFilesByCreatedTimeAscFolders.contains(folderPath)) {
-                console.log("sortFilesByCreatedTimeAscFolders.contains(folderPath)")
+                // console.log("sortFilesByCreatedTimeAscFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -222,7 +222,7 @@ export default function Tree(props: TreeProps) {
             }
             // created time desc
             else if (sortFilesByCreatedTimeDescFolders.contains(folderPath)) {
-                console.log("TreeComponent::sortFilesByCreatedTimeDescFolders.contains(folderPath)")
+                // console.log("TreeComponent::sortFilesByCreatedTimeDescFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -233,7 +233,7 @@ export default function Tree(props: TreeProps) {
             }
             // updated time asc
             else if (sortFilesByUpdatedTimeAscFolders.contains(folderPath)) {
-                console.log("sortFilesByUpdatedTimeAscFolders.contains(folderPath)")
+                // console.log("sortFilesByUpdatedTimeAscFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -244,7 +244,7 @@ export default function Tree(props: TreeProps) {
             }
             // updated time desc
             else if (sortFilesByUpdatedTimeDescFolders.contains(folderPath)) {
-                console.log("sortFilesByUpdatedTimeDescFolders.contains(folderPath)")
+                // console.log("sortFilesByUpdatedTimeDescFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -282,8 +282,8 @@ export default function Tree(props: TreeProps) {
             }
         });
 
-        console.log("fileList.length:" + fileList.length);
-        console.log("sortedfileList.length:" + sortedfileList.length);
+        // console.log("fileList.length:" + fileList.length);
+        // console.log("sortedfileList.length:" + sortedfileList.length);
         return sortedfileList.length > 0 ? sortedfileList[0].path : "";
     };
 
