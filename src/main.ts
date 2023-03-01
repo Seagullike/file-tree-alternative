@@ -1,6 +1,6 @@
 import { Plugin, addIcon, TAbstractFile } from 'obsidian';
 import { VIEW_TYPE, FileTreeView, ICON } from './FileTreeView';
-import { ZoomInIcon, ZoomOutIcon, ZoomOutDoubleIcon, LocationIcon } from './utils/icons';
+import { ZoomInIcon, ZoomOutIcon, ZoomOutDoubleIcon, LocationIcon, SpaceIcon } from './utils/icons';
 import { FileTreeAlternativePluginSettings, FileTreeAlternativePluginSettingsTab, DEFAULT_SETTINGS } from './settings';
 import { VaultChange } from 'utils/types';
 
@@ -32,6 +32,7 @@ export default class FileTreeAlternativePlugin extends Plugin {
         addIcon('zoomOutIcon', ZoomOutIcon);
         addIcon('zoomOutDoubleIcon', ZoomOutDoubleIcon);
         addIcon('locationIcon', LocationIcon);
+        addIcon('spaceIcon', SpaceIcon);
 
         // Load Settings
         this.addSettingTab(new FileTreeAlternativePluginSettingsTab(this.app, this));
@@ -138,8 +139,10 @@ export default class FileTreeAlternativePlugin extends Plugin {
             await leaf.setViewState({ type: VIEW_TYPE });
             if (showAfterAttach) this.app.workspace.revealLeaf(leaf);
         } else {
-            // Already mounted - needs to be revealed
-            leafs.forEach((leaf) => this.app.workspace.revealLeaf(leaf));
+            // Already mounted - show if only selected showAfterAttach
+            if (showAfterAttach) {
+                leafs.forEach((leaf) => this.app.workspace.revealLeaf(leaf));
+            }
         }
     };
 
