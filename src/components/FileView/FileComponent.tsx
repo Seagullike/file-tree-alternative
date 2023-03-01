@@ -29,6 +29,7 @@ export function FileComponent(props: FilesProps) {
     const [excludedFolders] = useRecoilState(recoilState.excludedFolders);
     const [showSubFolders, setShowSubFolders] = useRecoilState(recoilState.showSubFolders);
     const [focusedFolder, _setFocusedFolder] = useRecoilState(recoilState.focusedFolder);
+
     // sort files
     const [sortFilesByNameAscFolders] = useRecoilState(recoilState.sortFilesByNameAscFolders);
     const [sortFilesByNameDescFolders] = useRecoilState(recoilState.sortFilesByNameDescFolders);
@@ -95,17 +96,11 @@ export function FileComponent(props: FilesProps) {
         if (sortedfileList.length > 0) {
             folderPath = sortedfileList[0].path.replace("/" + sortedfileList[0].name, "");
         }
-        // console.log("sortFilesByNameAscFolders:" + sortFilesByNameAscFolders)
-        // console.log("sortFilesByNameDescFolders:" + sortFilesByNameDescFolders)
-        // console.log("sortFilesByCreatedTimeAscFolders:" + sortFilesByCreatedTimeAscFolders)
-        // console.log("sortFilesByCreatedTimeDescFolders:" + sortFilesByCreatedTimeDescFolders)
-        // console.log("sortFilesByUpdatedTimeAscFolders:" + sortFilesByUpdatedTimeAscFolders)
-        // console.log("sortFilesByUpdatedTimeDescFolders:" + sortFilesByUpdatedTimeDescFolders)
 
         sortedfileList = sortedfileList.sort((a, b) => {
             // name asc
             if (sortFilesByNameAscFolders.contains(folderPath)) {
-                console.log("sortFilesByNameAscFolders.contains(folderPath)")
+                // console.log("sortFilesByNameAscFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -118,7 +113,7 @@ export function FileComponent(props: FilesProps) {
             }
             // name desc
             else if (sortFilesByNameDescFolders.contains(folderPath)) {
-                console.log("sortFilesByNameDescFolders.contains(folderPath)")
+                // console.log("sortFilesByNameDescFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -131,7 +126,7 @@ export function FileComponent(props: FilesProps) {
             }
             // created time asc
             else if (sortFilesByCreatedTimeAscFolders.contains(folderPath)) {
-                console.log("sortFilesByCreatedTimeAscFolders.contains(folderPath)")
+                // console.log("sortFilesByCreatedTimeAscFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -142,7 +137,7 @@ export function FileComponent(props: FilesProps) {
             }
             // created time desc
             else if (sortFilesByCreatedTimeDescFolders.contains(folderPath)) {
-                console.log("sortFilesByCreatedTimeDescFolders.contains(folderPath)")
+                // console.log("FileComponent::sortFilesByCreatedTimeDescFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -153,7 +148,7 @@ export function FileComponent(props: FilesProps) {
             }
             // updated time asc
             else if (sortFilesByUpdatedTimeAscFolders.contains(folderPath)) {
-                console.log("sortFilesByUpdatedTimeAscFolders.contains(folderPath)")
+                // console.log("sortFilesByUpdatedTimeAscFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
@@ -164,7 +159,7 @@ export function FileComponent(props: FilesProps) {
             }
             // updated time desc
             else if (sortFilesByUpdatedTimeDescFolders.contains(folderPath)) {
-                console.log("sortFilesByUpdatedTimeDescFolders.contains(folderPath)")
+                // console.log("sortFilesByUpdatedTimeDescFolders.contains(folderPath)")
                 if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
                     return -1;
                 } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {

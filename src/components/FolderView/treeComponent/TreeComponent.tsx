@@ -6,6 +6,8 @@ import { getFolderIcon, IoMdArrowDropright } from 'utils/icons';
 import * as recoilState from 'recoil/pluginState';
 import { useRecoilState } from 'recoil';
 import useLongPress from 'hooks/useLongPress';
+import { TFile, Menu } from 'obsidian';
+import * as Util from 'utils/Utils';
 
 type TreeProps = {
     open?: boolean;
@@ -21,10 +23,32 @@ type TreeProps = {
 };
 
 export default function Tree(props: TreeProps) {
+
+    const plugin = props.plugin;
+    const [pinnedFiles] = useRecoilState(recoilState.pinnedFiles);
+
     // Global States
     const [openFolders, setOpenFolders] = useRecoilState(recoilState.openFolders);
     const [folderFileCountMap] = useRecoilState(recoilState.folderFileCountMap);
     const [activeFolderPath] = useRecoilState(recoilState.activeFolderPath);
+
+    const [excludedExtensions] = useRecoilState(recoilState.excludedExtensions);
+    const [excludedFolders] = useRecoilState(recoilState.excludedFolders);
+
+    // sort files
+    const [sortFilesByNameAscFolders] = useRecoilState(recoilState.sortFilesByNameAscFolders);
+    const [sortFilesByNameDescFolders] = useRecoilState(recoilState.sortFilesByNameDescFolders);
+    const [sortFilesByCreatedTimeAscFolders] = useRecoilState(recoilState.sortFilesByCreatedTimeAscFolders);
+    const [sortFilesByCreatedTimeDescFolders] = useRecoilState(recoilState.sortFilesByCreatedTimeDescFolders);
+    const [sortFilesByUpdatedTimeAscFolders] = useRecoilState(recoilState.sortFilesByUpdatedTimeAscFolders);
+    const [sortFilesByUpdatedTimeDescFolders] = useRecoilState(recoilState.sortFilesByUpdatedTimeDescFolders);
+
+    const [fileList, setFileList] = useRecoilState(recoilState.fileList);
+
+    // File List Update once showSubFolders change
+    useEffect(() => {
+        setFileList(Util.getFilesUnderPath(activeFolderPath, plugin));
+    }, [true]);
 
     const longPressEvents = useLongPress((e: React.TouchEvent) => {
         props.onContextMenu(e);
@@ -65,11 +89,20 @@ export default function Tree(props: TreeProps) {
 
     // --> Click Events
     const folderNameClickEvent = (ev: React.MouseEvent) => {
+        const folderPath = `${props.folder.path}`;
+        console.log("folderPath:" + folderPath);
+        console.log("fileList.length:" + fileList.length);
+        const folderFileList = Util.getFilesUnderPath(folderPath, plugin, true);
+        const firstFileFullPath = customFiles(folderFileList);
+
+        console.log("firstFileFullPath:" + firstFileFullPath);
         if (props.plugin.settings.folderNote && ev.shiftKey) {
             const fileFullPath = `${props.folder.path}/${props.folder.name}.md`;
             const folderNoteFile = props.plugin.app.vault.getAbstractFileByPath(fileFullPath);
+
             props.plugin.app.workspace.openLinkText(fileFullPath, '/', false);
         } else {
+            props.plugin.app.workspace.openLinkText(firstFileFullPath, '/', false);
             props.onClick();
         }
     };
@@ -120,6 +153,140 @@ export default function Tree(props: TreeProps) {
         e.dataTransfer.setData('application/json', JSON.stringify({ folderPath: folder.path }));
     };
 
+    // Sort - Filter Files Depending on Preferences
+    const customFiles = (fileList: TFile[]) => {
+        console.log("TreeComponent:customFiles")
+        let sortedfileList: TFile[];
+        // Remove Files with Excluded Extensions
+        if (excludedExtensions.length > 0) {
+            sortedfileList = fileList.filter((file) => !excludedExtensions.contains(file.extension));
+        }
+        // Remove Files from Excluded Folders
+        if (excludedFolders.length > 0) {
+            sortedfileList = sortedfileList.filter((file) => {
+                for (let exc of excludedFolders) {
+                    if (file.path.startsWith(exc)) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+        // Remove Files for Folder Note (If file name is same as parent folder name)
+        if (plugin.settings.folderNote) {
+            sortedfileList = sortedfileList.filter((f) => f.basename !== f.parent.name);
+        }
+        // Sort File by Name or Last Content Update, moving pinned files to the front
+        let folderPath: string;
+        if (sortedfileList.length > 0) {
+            folderPath = sortedfileList[0].path.replace("/" + sortedfileList[0].name, "");
+        }
+
+        sortedfileList = sortedfileList.sort((a, b) => {
+            // name asc
+            if (sortFilesByNameAscFolders.contains(folderPath)) {
+                console.log("sortFilesByNameAscFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return plugin.settings.showFileNameAsFullPath
+                        ? a.path.localeCompare(b.path, 'en', { numeric: true })
+                        : a.name.localeCompare(b.name, 'en', { numeric: true });
+                }
+            }
+            // name desc
+            else if (sortFilesByNameDescFolders.contains(folderPath)) {
+                console.log("sortFilesByNameDescFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return plugin.settings.showFileNameAsFullPath
+                        ? b.path.localeCompare(a.path, 'en', { numeric: true })
+                        : b.name.localeCompare(a.name, 'en', { numeric: true });
+                }
+            }
+            // created time asc
+            else if (sortFilesByCreatedTimeAscFolders.contains(folderPath)) {
+                console.log("sortFilesByCreatedTimeAscFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return b.stat.ctime - a.stat.ctime;
+                }
+            }
+            // created time desc
+            else if (sortFilesByCreatedTimeDescFolders.contains(folderPath)) {
+                console.log("TreeComponent::sortFilesByCreatedTimeDescFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return b.stat.ctime - a.stat.ctime;
+                }
+            }
+            // updated time asc
+            else if (sortFilesByUpdatedTimeAscFolders.contains(folderPath)) {
+                console.log("sortFilesByUpdatedTimeAscFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return b.stat.mtime - a.stat.mtime;
+                }
+            }
+            // updated time desc
+            else if (sortFilesByUpdatedTimeDescFolders.contains(folderPath)) {
+                console.log("sortFilesByUpdatedTimeDescFolders.contains(folderPath)")
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else {
+                    return a.stat.mtime - b.stat.mtime;
+                }
+            }
+            else {
+                if (pinnedFiles.contains(a) && !pinnedFiles.contains(b)) {
+                    return -1;
+                } else if (!pinnedFiles.contains(a) && pinnedFiles.contains(b)) {
+                    return 1;
+                } else if (plugin.settings.sortFilesBy === 'name') {
+                    return plugin.settings.showFileNameAsFullPath
+                        ? a.path.localeCompare(b.path, 'en', { numeric: true })
+                        : a.name.localeCompare(b.name, 'en', { numeric: true });
+                } else if (plugin.settings.sortFilesBy === 'name-rev') {
+                    return plugin.settings.showFileNameAsFullPath
+                        ? b.path.localeCompare(a.path, 'en', { numeric: true })
+                        : b.name.localeCompare(a.name, 'en', { numeric: true });
+                } else if (plugin.settings.sortFilesBy === 'last-update') {
+                    return b.stat.mtime - a.stat.mtime;
+                } else if (plugin.settings.sortFilesBy === 'last-update-rev') {
+                    return a.stat.mtime - b.stat.mtime;
+                } else if (plugin.settings.sortFilesBy === 'created') {
+                    return b.stat.ctime - a.stat.ctime;
+                } else if (plugin.settings.sortFilesBy === 'created-rev') {
+                    return a.stat.ctime - b.stat.ctime;
+                } else if (plugin.settings.sortFilesBy === 'file-size') {
+                    return b.stat.size - a.stat.size;
+                } else if (plugin.settings.sortFilesBy === 'file-size-rev') {
+                    return a.stat.size - b.stat.size;
+                }
+            }
+        });
+
+        console.log("fileList.length:" + fileList.length);
+        console.log("sortedfileList.length:" + sortedfileList.length);
+        return sortedfileList.length > 0 ? sortedfileList[0].path : "";
+    };
+
     return (
         <Dropzone
             onDrop={onDrop}
@@ -158,9 +325,8 @@ export default function Tree(props: TreeProps) {
                                         {props.type}
                                     </div>
                                     <div
-                                        className={`oz-folder-name ${isFolderActive ? 'is-folder-active' : ''}${
-                                            props.isRootFolder ? ' is-root-folder' : ''
-                                        }`}>
+                                        className={`oz-folder-name ${isFolderActive ? 'is-folder-active' : ''}${props.isRootFolder ? ' is-root-folder' : ''
+                                            }`}>
                                         {props.content}{' '}
                                         {props.plugin.settings.folderNote && props.folder.children.some((f) => f.name === `${props.folder.name}.md`) ? (
                                             <IoMdArrowDropright size={10} className="oz-folder-note-icon" />
