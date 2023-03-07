@@ -6,7 +6,7 @@ import { getFolderIcon, IoMdArrowDropright } from 'utils/icons';
 import * as recoilState from 'recoil/pluginState';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import useLongPress from 'hooks/useLongPress';
-import { TFile, Menu } from 'obsidian';
+import { TFile } from 'obsidian';
 import * as Util from 'utils/Utils';
 
 type TreeProps = {
@@ -58,7 +58,6 @@ export default function Tree(props: TreeProps) {
             leafBySplit: (e.ctrlKey || e.metaKey) && (e.shiftKey || e.altKey),
         });
         setActiveFile(file);
-        // updateMyAtom(file);
     };
 
     // File List Update once showSubFolders change

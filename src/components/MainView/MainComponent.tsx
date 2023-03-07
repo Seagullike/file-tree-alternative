@@ -247,14 +247,6 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
                 if (pinnedFile) {
                     let pinnedFileToPush = pinnedFile as TFile
                     pinnedFiles.push(pinnedFile as TFile);
-                    // print log
-                    console.log("--getPinnedFilesFromSettings():pinnedFile.basename = " + pinnedFileToPush.basename)
-                    console.log("--getPinnedFilesFromSettings():pinnedFile.extension = " + pinnedFileToPush.extension)
-                    console.log("--getPinnedFilesFromSettings():pinnedFile.name = " + pinnedFileToPush.name)
-                    console.log("--getPinnedFilesFromSettings():pinnedFile.parent = " + pinnedFileToPush.parent)
-                    console.log("--getPinnedFilesFromSettings():pinnedFile.path = " + pinnedFileToPush.path)
-                    console.log("--getPinnedFilesFromSettings():pinnedFile.stat = " + pinnedFileToPush.stat)
-                    console.log("--getPinnedFilesFromSettings():pinnedFile.vault = " + pinnedFileToPush.vault)
                 }
             }
         }
@@ -272,9 +264,6 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
                 let sortingOption = FileTreeUtils.GetFolderSortingOption(option);
                 if (sortingOption) {
                     folderSortingOptions.push(sortingOption);
-                    // print log
-                    console.log("--getFolderSortingOptionsFromSettings():sortingOption.sortingType = " + sortingOption.sortingType)
-                    console.log("--getFolderSortingOptionsFromSettings():sortingOption.sortingDirection = " + sortingOption.sortingDirection)
                 }
             }
         }
@@ -453,7 +442,6 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
 
             // Set active file to show in the list
             setActiveFile(fileToReveal);
-            // updateMyAtom(fileToReveal);
 
             // Set openfolders to expand in the folder list
             const foldersToOpen = getAllFoldersToOpen(fileToReveal);

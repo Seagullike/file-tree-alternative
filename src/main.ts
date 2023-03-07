@@ -90,43 +90,19 @@ export default class FileTreeAlternativePlugin extends Plugin {
         this.refreshIconRibbon();
     }
 
-    // recoilState.activeFile
-    // setMyAtom = useSetRecoilState(recoilState.activeFile);
-    // 暴露的方法
-    // async myCustomMethod(file: TFile) {
-    //     console.log(`Called myCustomMethod with file ${file.name}`);
-    //     // const [activeFile, setActiveFile] = useRecoilState(recoilState.activeFile);
-    //     // setActiveFile(file);
-
-    //     // this.setMyAtom(file);
-
-    //     // const updateMyAtom = useRecoilCallback(({ set }) => (newValue) => {
-    //     //     set(recoilState.activeFile, newValue);
-    //     // });
-
-    //     // updateMyAtom(file);
-    //     updateMyAtom(file);
-    //     console.log(`Called updateMyAtom`);
-    // }
     // 定义
     updateMyAtomFile: (newValue: TFile) => void;
     updateMyAtomTree: (newValue: TFile) => void;
     updateMyAtomMain: (newValue: TFile) => void;
-    // updateMyAtom = (newValue: TFile) => {
-    //     const setMyAtom = useSetRecoilState(recoilState.activeFile);
-    //     setMyAtom(newValue);
-    // }
-
+    updateMyAtom = (newValue: TFile) => {
+        const setMyAtom = useSetRecoilState(recoilState.activeFile);
+        setMyAtom(newValue);
+    }
+    // 暴露的方法
     async myCustomMethod(file: TFile) {
-        console.log("file-tree-alternative::myCustomMethod(" + file.name + ")");
-        // const updateMyAtom = useRecoilCallback(({ set }) => (newValue) => {
-        //     set(recoilState.activeFile, newValue);
-        // });
-        console.log("file-tree-alternative::updateMyAtom");
         this.updateMyAtomFile(file);
         this.updateMyAtomTree(file);
         this.updateMyAtomMain(file);
-        console.log("file-tree-alternative::updateMyAtom end");
     }
 
     onunload() {
