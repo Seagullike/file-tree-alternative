@@ -7,7 +7,7 @@ import { FileTreeView } from 'FileTreeView';
 import FileTreeAlternativePlugin, { eventTypes } from 'main';
 import * as FileTreeUtils from 'utils/Utils';
 import * as recoilState from 'recoil/pluginState';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import useForceUpdate from 'hooks/ForceUpdate';
 import { CustomVaultChangeEvent, VaultChange } from 'utils/types';
 import { FolderSortingOption } from 'modals';
@@ -20,6 +20,9 @@ interface MainTreeComponentProps {
 export default function MainTreeComponent(props: MainTreeComponentProps) {
     // --> Main Variables
     const { plugin } = props;
+
+    const setMyAtom = useSetRecoilState(recoilState.activeFile);
+    plugin.updateMyAtomMain = setMyAtom;
 
     // --> Force Update Hook
     const forceUpdate = useForceUpdate();
@@ -450,6 +453,7 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
 
             // Set active file to show in the list
             setActiveFile(fileToReveal);
+            // updateMyAtom(fileToReveal);
 
             // Set openfolders to expand in the folder list
             const foldersToOpen = getAllFoldersToOpen(fileToReveal);

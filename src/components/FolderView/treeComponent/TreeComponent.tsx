@@ -4,7 +4,7 @@ import FileTreeAlternativePlugin from 'main';
 import Dropzone from 'react-dropzone';
 import { getFolderIcon, IoMdArrowDropright } from 'utils/icons';
 import * as recoilState from 'recoil/pluginState';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import useLongPress from 'hooks/useLongPress';
 import { TFile, Menu } from 'obsidian';
 import * as Util from 'utils/Utils';
@@ -26,6 +26,9 @@ export default function Tree(props: TreeProps) {
 
     const plugin = props.plugin;
     const [pinnedFiles] = useRecoilState(recoilState.pinnedFiles);
+
+    const setMyAtom = useSetRecoilState(recoilState.activeFile);
+    plugin.updateMyAtomTree = setMyAtom;
 
     // Global States
     const [openFolders, setOpenFolders] = useRecoilState(recoilState.openFolders);
@@ -55,6 +58,7 @@ export default function Tree(props: TreeProps) {
             leafBySplit: (e.ctrlKey || e.metaKey) && (e.shiftKey || e.altKey),
         });
         setActiveFile(file);
+        // updateMyAtom(file);
     };
 
     // File List Update once showSubFolders change

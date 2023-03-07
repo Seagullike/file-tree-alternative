@@ -6,7 +6,7 @@ import { VaultChangeModal, MoveSuggestionModal, ConfirmationModal } from 'modals
 import FileTreeAlternativePlugin, { eventTypes } from 'main';
 import * as Util from 'utils/Utils';
 import * as recoilState from 'recoil/pluginState';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { SortType } from 'settings';
 import useForceUpdate from 'hooks/ForceUpdate';
 import useLongPress, { isMouseEvent } from 'hooks/useLongPress';
@@ -19,6 +19,9 @@ interface FilesProps {
 export function FileComponent(props: FilesProps) {
     let searchInput = React.useRef<HTMLInputElement>(null);
     const plugin = props.plugin;
+
+    const setMyAtom = useSetRecoilState(recoilState.activeFile);
+    plugin.updateMyAtomFile = setMyAtom;
 
     // States Coming From Main Component
     const [_view, setView] = useRecoilState(recoilState.view);
@@ -504,6 +507,7 @@ const NavFile = (props: { file: TFile; plugin: FileTreeAlternativePlugin }) => {
             leafBySplit: (e.ctrlKey || e.metaKey) && (e.shiftKey || e.altKey),
         });
         setActiveFile(file);
+        // updateMyAtom(file);
     };
 
     // Handle Right Click Event on File - Custom Menu
