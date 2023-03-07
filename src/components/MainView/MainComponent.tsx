@@ -21,8 +21,10 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
     // --> Main Variables
     const { plugin } = props;
 
-    const setMyAtom = useSetRecoilState(recoilState.activeFile);
-    plugin.updateMyAtomMain = setMyAtom;
+    const setMyActiveFolder = useSetRecoilState(recoilState.activeFolderPath);
+    plugin.updateMyActiveFolderMain = setMyActiveFolder;
+    const setMyActiveFile = useSetRecoilState(recoilState.activeFile);
+    plugin.updateMyActiveMain = setMyActiveFile;
 
     // --> Force Update Hook
     const forceUpdate = useForceUpdate();
@@ -240,8 +242,6 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
         let localStoragePinnedFiles = localStorage.getItem(plugin.keys.pinnedFilesKey);
         if (localStoragePinnedFiles) {
             localStoragePinnedFiles = JSON.parse(localStoragePinnedFiles);
-            // print log
-            console.log("--getPinnedFilesFromSettings():localStoragePinnedFiles = " + localStoragePinnedFiles)
             for (let file of localStoragePinnedFiles) {
                 let pinnedFile = plugin.app.vault.getAbstractFileByPath(file);
                 if (pinnedFile) {
@@ -258,8 +258,6 @@ export default function MainTreeComponent(props: MainTreeComponentProps) {
         let localStorageFolderSortingOptions = localStorage.getItem(plugin.keys.folderSortingOptionsKey);
         if (localStorageFolderSortingOptions) {
             localStorageFolderSortingOptions = JSON.parse(localStorageFolderSortingOptions);
-            // print log
-            console.log("--getFolderSortingOptionsFromSettings():localStorageFolderSortingOptions = " + localStorageFolderSortingOptions)
             for (let option of localStorageFolderSortingOptions) {
                 let sortingOption = FileTreeUtils.GetFolderSortingOption(option);
                 if (sortingOption) {

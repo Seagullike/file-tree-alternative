@@ -27,8 +27,10 @@ export default function Tree(props: TreeProps) {
     const plugin = props.plugin;
     const [pinnedFiles] = useRecoilState(recoilState.pinnedFiles);
 
-    const setMyAtom = useSetRecoilState(recoilState.activeFile);
-    plugin.updateMyAtomTree = setMyAtom;
+    const setMyActiveFolder = useSetRecoilState(recoilState.activeFolderPath);
+    plugin.updateMyActiveFolderTree = setMyActiveFolder;
+    const setMyActiveFile = useSetRecoilState(recoilState.activeFile);
+    plugin.updateMyActiveTree = setMyActiveFile;
 
     // Global States
     const [openFolders, setOpenFolders] = useRecoilState(recoilState.openFolders);

@@ -1,4 +1,4 @@
-import { Plugin, addIcon, TAbstractFile, TFile, PluginManifest } from 'obsidian';
+import { Plugin, addIcon, TAbstractFile, TFile, PluginManifest, TFolder } from 'obsidian';
 import { VIEW_TYPE, FileTreeView, ICON } from './FileTreeView';
 import { ZoomInIcon, ZoomOutIcon, ZoomOutDoubleIcon, LocationIcon, SpaceIcon } from './utils/icons';
 import { FileTreeAlternativePluginSettings, FileTreeAlternativePluginSettingsTab, DEFAULT_SETTINGS } from './settings';
@@ -90,19 +90,35 @@ export default class FileTreeAlternativePlugin extends Plugin {
         this.refreshIconRibbon();
     }
 
-    // 定义
-    updateMyAtomFile: (newValue: TFile) => void;
-    updateMyAtomTree: (newValue: TFile) => void;
-    updateMyAtomMain: (newValue: TFile) => void;
-    updateMyAtom = (newValue: TFile) => {
-        const setMyAtom = useSetRecoilState(recoilState.activeFile);
-        setMyAtom(newValue);
-    }
+    // 定义，当前显示的文件夹和文件
+    updateMyActiveFolderFile: (path: string) => void;
+    updateMyActiveFolderTree: (path: string) => void;
+    updateMyActiveFolderMain: (path: string) => void;
+    updateMyActiveFile: (newValue: TFile) => void;
+    updateMyActiveTree: (newValue: TFile) => void;
+    updateMyActiveMain: (newValue: TFile) => void;
     // 暴露的方法
     async myCustomMethod(file: TFile) {
-        this.updateMyAtomFile(file);
-        this.updateMyAtomTree(file);
-        this.updateMyAtomMain(file);
+        if (this.updateMyActiveFolderFile) {
+            this.updateMyActiveFolderFile(file.parent.path);
+        }
+        if (this.updateMyActiveFolderTree) {
+            this.updateMyActiveFolderTree(file.parent.path);
+        }
+        if (this.updateMyActiveFolderMain) {
+            this.updateMyActiveFolderMain(file.parent.path);
+        }
+
+        if (this.updateMyActiveFile) {
+            this.updateMyActiveFile(file);
+        }
+        if (this.updateMyActiveTree) {
+            this.updateMyActiveMain(file);
+        }
+        this.updateMyActiveTree(file);
+        if (this.updateMyActiveMain) {
+            this.updateMyActiveMain(file);
+        }
     }
 
     onunload() {

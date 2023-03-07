@@ -20,8 +20,10 @@ export function FileComponent(props: FilesProps) {
     let searchInput = React.useRef<HTMLInputElement>(null);
     const plugin = props.plugin;
 
-    const setMyAtom = useSetRecoilState(recoilState.activeFile);
-    plugin.updateMyAtomFile = setMyAtom;
+    const setMyActiveFolder = useSetRecoilState(recoilState.activeFolderPath);
+    plugin.updateMyActiveFolderFile = setMyActiveFolder;
+    const setMyActiveFile = useSetRecoilState(recoilState.activeFile);
+    plugin.updateMyActiveFile = setMyActiveFile;
 
     // States Coming From Main Component
     const [_view, setView] = useRecoilState(recoilState.view);
