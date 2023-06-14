@@ -115,10 +115,11 @@ export default function Tree(props: TreeProps) {
             const folderPath = `${props.folder.path}`;
             // console.log("folderPath:" + folderPath);
             // console.log("fileList.length:" + fileList.length);
-            const folderFileList = Util.getFilesUnderPath(folderPath, plugin, true);
-            const firstFile = customFiles(folderFileList);
 
+            const folderFileList = Util.getFilesUnderPath(folderPath, plugin, false);
+            const firstFile = customFiles(folderFileList);
             // console.log("firstFile:" + firstFile.name);
+
             openFile(firstFile, ev);
             props.onClick();
         }
