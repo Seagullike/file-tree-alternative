@@ -118,10 +118,15 @@ export default function Tree(props: TreeProps) {
 
             const folderFileList = Util.getFilesUnderPath(folderPath, plugin, false);
             const firstFile = customFiles(folderFileList);
-            // console.log("firstFile:" + firstFile.name);
-
-            openFile(firstFile, ev);
-            props.onClick();
+            if (firstFile != null) {
+                // console.log("firstFile:" + firstFile.name);
+                // console.log("firstFile.extension:" + firstFile.extension);
+                // 默认只自动打开md文件
+                if (firstFile.extension === 'md') {
+                    openFile(firstFile, ev);
+                }
+                props.onClick();
+            }
         }
     };
     const folderContextMenuEvent = () => props.onContextMenu();
@@ -302,7 +307,12 @@ export default function Tree(props: TreeProps) {
 
         // console.log("fileList.length:" + fileList.length);
         // console.log("sortedfileList.length:" + sortedfileList.length);
-        return sortedfileList.length > 0 ? sortedfileList[0] : new TFile();
+        if (sortedfileList.length > 0) {
+            return sortedfileList[0];
+        }
+        else {
+            return null;
+        }
     };
 
     return (
